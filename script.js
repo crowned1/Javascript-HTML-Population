@@ -30,22 +30,28 @@ $resetButan.addEventListener("click", resetTable);
 const oldData = dataSet
 let filterData = dataSet
 
-// Set up a function to render the table
-function renderTable(ufos) {
-    $tbody.innerHTML= "";
-    for (var i = 0, ii=ufos.length; i < ii; i++) {
-        // Insert rows into our table
-        var $row = $tbody.insertRow(i);
-        var tableKeys = Object.values(ufos[i]);
+// Pagination time!
+let currentPage = 1;
+let recordsPerPage = 1000;
 
-        for (var j = 0; j < 7; j++) {
-            // Insert cells into the row
-            var $cell = $row.insertCell(j);
-            $cell.innerText = tableKeys[j];
-        }
-    }
-}
+// I think this is made obsolete by pagination
+// // Set up a function to render the table
+// function renderTable(ufos) {
+//     $tbody.innerHTML= "";
+//     for (var i = 0, ii=ufos.length; i < ii; i++) {
+//         // Insert rows into our table
+//         var $row = $tbody.insertRow(i);
+//         var tableKeys = Object.values(ufos[i]);
 
+//         for (var j = 0; j < 7; j++) {
+//             // Insert cells into the row
+//             var $cell = $row.insertCell(j);
+//             $cell.innerText = tableKeys[j];
+//         }
+//     }
+// }
+
+// this stuff might be too
 function dtClick() {
     let dtFilter = $datetimeInput.value.trim();
 
@@ -54,7 +60,8 @@ function dtClick() {
 
         return dtUfo === dtFilter;
     });
-    renderTable(filterData);
+    changePage(1, filterData);
+    currentPage = 1;
 }
 
 function cityClick() {
@@ -65,7 +72,8 @@ function cityClick() {
 
         return cityUfo === cityFilter;
     });
-    renderTable(filterData);
+    changePage(1, filterData);
+    currentPage = 1;
 }
 
 function stateClick() {
@@ -76,7 +84,8 @@ function stateClick() {
 
         return stateUfo === stateFilter;
     });
-    renderTable(filterData);
+    changePage(1, filterData);
+    currentPage = 1;
 }
 
 function countryClick() {
@@ -87,7 +96,8 @@ function countryClick() {
 
         return countryUfo === countryFilter;
     });
-    renderTable(filterData);
+    changePage(1, filterData);
+    currentPage = 1;
 }
 
 function shapeClick() {
@@ -98,11 +108,81 @@ function shapeClick() {
 
         return shapeUfo === shapeFilter;
     });
-    renderTable(filterData);
+    changePage(1, filterData);
+    currentPage = 1;
 }
 
 function resetTable() {
     filterData = oldData;
-    renderTable(filterData);
+    changePage(1, filterData);
 }
-renderTable(filterData);
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        changePage(currentPage, filterData);
+    }
+}
+
+function nextPage() {
+    if (currentPage < numPages(filterData)) {
+        currentPage++;
+        changePage(currentPage, filterData);
+    }
+}
+
+function changePage(page, ufos) {
+    let $nextPage = document.getElementById("nextpage");
+    let $nextPage2 = document.getElementById("nextpage2");
+    let $prevPage = document.getElementById("prevpage");
+    let $prevPage2 = document.getElementById("prevpage2");
+    let $ufoTable = document.getElementById("ufotable");
+    let $page = document.getElementById("page");
+    let $page2 = document.getElementById("page2");
+
+    // I cut this bit out from the code because I don't understand it yet
+    // if (page < 1) page = 1;
+    // if (page > numPages(filterData)) page = numPages(filterData);
+
+    $ufoTable.innerHTML = "";
+    ufoLength = ufos.length;
+    let counter=0
+    for (var i = (page-1) * recordsPerPage; i < (page * recordsPerPage) && i < ufoLength; i++) {
+        let $row = $ufoTable.insertRow(counter);
+        counter++
+        let tableKeys = Object.values(ufos[i]);
+        for (var j = 0; j < 7; j++) {
+            //Insert cells into the row
+            let $cell = $row.insertCell(j);
+            $cell.innerText = tableKeys[j];
+        }
+    }
+    $page.innerHTML = page;
+    $page2.innerHTML = page;
+
+    if (page === 1) {
+        $prevPage.style.visibility = "hidden";
+        $prevPage2.style.visibility = "hidden";
+    }
+    else {
+        $prevPage.style.visibility = "visible";
+        $prevPage2.style.visibility = "visible";
+    }
+
+    if (page == numPages(filterData)) {
+        $nextPage.style.visibility = "hidden";
+        $nextPage2.style.visibility = "hidden";
+    }
+    else {
+        $nextPage.style.visibility = "visible";
+        $nextPage2.style.visibility = "visible";
+    }
+}
+
+function numPages(ufos) {
+    return Math.ceil(ufos.length / recordsPerPage);
+}
+
+window.onload = function() {
+    changePage(1, filterData);
+}
