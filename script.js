@@ -1,24 +1,15 @@
-// Set up DOM references to table, and inputs + their search buttons
+// Set up DOM references to table, and inputs + their search buttons, and a reset button.
 let $tbody = document.querySelector("tbody");
 
-let $datetimeInput = document.querySelector("#datetime");
+let $words = document.querySelector("#words");
 let $datetimeSearch = document.querySelector("#searchdt");
-
-let $cityInput = document.querySelector("#city");
 let $citySearch = document.querySelector("#searchcity");
-
-let $stateInput = document.querySelector("#state");
 let $stateSearch = document.querySelector("#searchstate");
-
-let $countryInput = document.querySelector("#country");
 let $countrySearch = document.querySelector("#searchcountry");
-
-let $shapeInput = document.querySelector("#shape");
 let $shapeSearch = document.querySelector("#searchshape");
-
 let $resetButan = document.querySelector("#reset");
 
-// Set up event listeners for each filter input
+// Set up event listeners for each filter input button click
 $datetimeSearch.addEventListener("click", dtClick);
 $citySearch.addEventListener("click", cityClick);
 $stateSearch.addEventListener("click", stateClick);
@@ -27,33 +18,16 @@ $shapeSearch.addEventListener("click", shapeClick);
 $resetButan.addEventListener("click", resetTable);
 
 // Set up variables for filtered data and original data
-const oldData = dataSet
-let filterData = dataSet
+const oldData = dataSet;
+let filterData = dataSet;
 
-// Pagination time!
+// Set up some variables for pagination
 let currentPage = 1;
-let recordsPerPage = 1000;
+let recordsPerPage = 250;
 
-// I think this is made obsolete by pagination
-// // Set up a function to render the table
-// function renderTable(ufos) {
-//     $tbody.innerHTML= "";
-//     for (var i = 0, ii=ufos.length; i < ii; i++) {
-//         // Insert rows into our table
-//         var $row = $tbody.insertRow(i);
-//         var tableKeys = Object.values(ufos[i]);
-
-//         for (var j = 0; j < 7; j++) {
-//             // Insert cells into the row
-//             var $cell = $row.insertCell(j);
-//             $cell.innerText = tableKeys[j];
-//         }
-//     }
-// }
-
-// this stuff might be too
+// Functions for the event listeners for the filters
 function dtClick() {
-    let dtFilter = $datetimeInput.value.trim();
+    let dtFilter = $words.value.trim();
 
     filterData = dataSet.filter(function(ufo) {
         let dtUfo = ufo.datetime;
@@ -65,7 +39,7 @@ function dtClick() {
 }
 
 function cityClick() {
-    let cityFilter = $cityInput.value.trim().toLowerCase();
+    let cityFilter = $words.value.trim().toLowerCase();
 
     filterData = dataSet.filter(function(ufo) {
         let cityUfo = ufo.city.toLowerCase();
@@ -77,7 +51,7 @@ function cityClick() {
 }
 
 function stateClick() {
-    let stateFilter = $stateInput.value.trim().toLowerCase();
+    let stateFilter = $words.value.trim().toLowerCase();
 
     filterData = dataSet.filter(function(ufo) {
         let stateUfo = ufo.state.toLowerCase();
@@ -89,7 +63,7 @@ function stateClick() {
 }
 
 function countryClick() {
-    let countryFilter = $countryInput.value.trim().toLowerCase();
+    let countryFilter = $words.value.trim().toLowerCase();
 
     filterData = dataSet.filter(function(ufo) {
         let countryUfo = ufo.country.toLowerCase();
@@ -101,7 +75,7 @@ function countryClick() {
 }
 
 function shapeClick() {
-    let shapeFilter = $shapeInput.value.trim().toLowerCase();
+    let shapeFilter = $words.value.trim().toLowerCase();
 
     filterData = dataSet.filter(function(ufo) {
         let shapeUfo = ufo.shape.toLowerCase();
@@ -117,6 +91,7 @@ function resetTable() {
     changePage(1, filterData);
 }
 
+// functions to move through the pagination
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
@@ -131,7 +106,9 @@ function nextPage() {
     }
 }
 
+// PAGINATE
 function changePage(page, ufos) {
+    // Set DOM variables for elements that will change as page changes
     let $nextPage = document.getElementById("nextpage");
     let $nextPage2 = document.getElementById("nextpage2");
     let $prevPage = document.getElementById("prevpage");
@@ -140,16 +117,26 @@ function changePage(page, ufos) {
     let $page = document.getElementById("page");
     let $page2 = document.getElementById("page2");
 
-    // I cut this bit out from the code because I don't understand it yet
+    // I cut this bit out from the source  because I don't understand it yet
     // if (page < 1) page = 1;
     // if (page > numPages(filterData)) page = numPages(filterData);
 
+    // Reset the table for each page
     $ufoTable.innerHTML = "";
+
+    // Do this here so it doesn't happen lots of times if it was in the for loop
     ufoLength = ufos.length;
+
+    // THIS VARIABLE can't use i for insertRow if you're multiplying it by 1000!
     let counter=0
+
+    // THE PAGINATION LOOP: set i to current page - 1, multiplied by how many records we want on each page, so we can get the proper index from our dataset.  Page 1 will get us started at index 0, 2 index 1000, etc 
     for (var i = (page-1) * recordsPerPage; i < (page * recordsPerPage) && i < ufoLength; i++) {
+        // insert row # not in the thousands and increment the counter
         let $row = $ufoTable.insertRow(counter);
         counter++
+
+        // find the right row to populate our table
         let tableKeys = Object.values(ufos[i]);
         for (var j = 0; j < 7; j++) {
             //Insert cells into the row
@@ -157,32 +144,37 @@ function changePage(page, ufos) {
             $cell.innerText = tableKeys[j];
         }
     }
-    $page.innerHTML = page;
-    $page2.innerHTML = page;
 
+    // Set the page element to display current page
+    $page.innerHTML = page + " (of " + numPages(filterData) + ")";
+    //$page2.innerHTML = page + " (of " + numPages(filterData) + ")";
+
+    // Conditionals to show/hide buttons if we're on the first or last page, or not
     if (page === 1) {
         $prevPage.style.visibility = "hidden";
-        $prevPage2.style.visibility = "hidden";
+        //$prevPage2.style.visibility = "hidden";
     }
     else {
         $prevPage.style.visibility = "visible";
-        $prevPage2.style.visibility = "visible";
+        //$prevPage2.style.visibility = "visible";
     }
 
     if (page == numPages(filterData)) {
         $nextPage.style.visibility = "hidden";
-        $nextPage2.style.visibility = "hidden";
+        //$nextPage2.style.visibility = "hidden";
     }
     else {
         $nextPage.style.visibility = "visible";
-        $nextPage2.style.visibility = "visible";
+        //$nextPage2.style.visibility = "visible";
     }
 }
 
+// a function to tell us how many pages we'll be needing
 function numPages(ufos) {
     return Math.ceil(ufos.length / recordsPerPage);
 }
 
+// Do things when the window loads the page
 window.onload = function() {
     changePage(1, filterData);
 }
