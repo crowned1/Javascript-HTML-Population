@@ -117,9 +117,12 @@ function changePage(page, ufos) {
     let $page = document.getElementById("page");
     let $page2 = document.getElementById("page2");
 
-    // I cut this bit out from the source  because I don't understand it yet
-    // if (page < 1) page = 1;
-    // if (page > numPages(filterData)) page = numPages(filterData);
+    if (page < 1) {
+        page = 1;
+    }
+    if (page > numPages(filterData)) {
+        page = numPages(filterData);
+    }
 
     // Reset the table for each page
     $ufoTable.innerHTML = "";
@@ -150,23 +153,7 @@ function changePage(page, ufos) {
     //$page2.innerHTML = page + " (of " + numPages(filterData) + ")";
 
     // Conditionals to show/hide buttons if we're on the first or last page, or not
-    if (page === 1) {
-        $prevPage.style.visibility = "hidden";
-        //$prevPage2.style.visibility = "hidden";
-    }
-    else {
-        $prevPage.style.visibility = "visible";
-        //$prevPage2.style.visibility = "visible";
-    }
-
-    if (page == numPages(filterData)) {
-        $nextPage.style.visibility = "hidden";
-        //$nextPage2.style.visibility = "hidden";
-    }
-    else {
-        $nextPage.style.visibility = "visible";
-        //$nextPage2.style.visibility = "visible";
-    }
+    
 }
 
 // a function to tell us how many pages we'll be needing

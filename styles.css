@@ -1,4 +1,12 @@
 body {
     background-color: black;
     color: white;
+    background: url("ufo.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+tr:hover {
+    background-color: grey;
 }
