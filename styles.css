@@ -8,5 +8,7 @@ body {
     background-size: cover;
 }
 tr:hover {
-    background-color: grey;
+    background-color: yellow;
+    color: red;
+    font-family: "Comic Sans MS";
 }
